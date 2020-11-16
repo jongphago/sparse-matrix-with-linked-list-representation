@@ -22,11 +22,11 @@ typedef struct matrix_node {
 
 matrix_pointer hdnode[MAX_SIZE];
 matrix_pointer new_node();
-matrix_pointer mread(FILE* inputFile);				// [Program 4.23] file에서 matrix 자료를 읽어서 리스트에 저장한다.
-void mwrite(matrix_pointer node);						// [Program 4.24] 행렬을 적절한 포맷(2차원 행렬형태)으로 출력한다.
-void merase(matrix_pointer* pointer);				// [Program 4.25]  NULL parameter인 경우 적절히 처리한다.
+matrix_pointer mread(FILE* inputFile);			
+void mwrite(matrix_pointer node);					
+void merase(matrix_pointer* pointer);			
 
-void main()																// 4.7 절의 선언과 함수들 참고
+void main()															
 {
 	matrix_pointer a, b;
 
@@ -44,7 +44,7 @@ void main()																// 4.7 절의 선언과 함수들 참고
 
 	mwrite(a);
 	mwrite(b);
-};
+}
 
 matrix_pointer new_node()
 {
