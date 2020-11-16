@@ -23,7 +23,7 @@ typedef struct matrix_node {
 matrix_pointer hdnode[MAX_SIZE];
 matrix_pointer new_node();
 matrix_pointer mread(FILE* inputFile);				// [Program 4.23] file에서 matrix 자료를 읽어서 리스트에 저장한다.
-void mwrite(matrix_pointer node);					// [Program 4.24] 행렬을 적절한 포맷(2차원 행렬형태)으로 출력한다.
+void mwrite(matrix_pointer node);						// [Program 4.24] 행렬을 적절한 포맷(2차원 행렬형태)으로 출력한다.
 void merase(matrix_pointer* pointer);				// [Program 4.25]  NULL parameter인 경우 적절히 처리한다.
 
 void main()																// 4.7 절의 선언과 함수들 참고
@@ -36,15 +36,14 @@ void main()																// 4.7 절의 선언과 함수들 참고
 	a = mread(inputA);
 	b = mread(inputB);
 
-
 	mwrite(a);
 	mwrite(b);
 
-	//merase(&a);
-	//merase(&b);
+	merase(&a);
+	merase(&b);
 
-	//mwrite(a);
-	//mwrite(b);
+	mwrite(a);
+	mwrite(b);
 };
 
 matrix_pointer new_node()
@@ -85,37 +84,41 @@ matrix_pointer mread(FILE* inputFile)
 			fscanf(inputFile, "%d", &value); row = i / num_cols; col = i % num_cols;
 			if (value == 0)
 				continue;
-			if (row > current_row) {
-				last->right = hdnode[current_row];								//........		1 : 
-				current_row = row;															//........		2 : 
-				last = hdnode[row];															//........		3 : 행이 바뀌면 헤드노드를 last로 지정
+			if (row > current_row) {														 
+				last->right = hdnode[current_row];								
+				current_row = row;															
+				last = hdnode[row];															
 			}
-			temp = new_node(); temp->tag = entry;							//........		4 : 새로운 노드(temp)를 선언하고 값 할당
-			temp->u.entry.row = row; temp->u.entry.col = col;		//.........		.
-			temp->u.entry.value = value;												//........		. 
+			temp = new_node(); temp->tag = entry;							
+			temp->u.entry.row = row; temp->u.entry.col = col;		
+			temp->u.entry.value = value;												 
 
-			last->right = temp;																//........		5 : 마지막 노드(last) 다음에 temp 연결
-			last = temp;																			//........		6 : 연결한 temp 노드를 last로 지정
-			hdnode[col]->u.next->down = temp;								//........		7 : 헤드노드 다음노드 down에 temp 연결
-			hdnode[col]->u.next = temp;												//........		8 : temp를 헤드노드의 연결된 마지막 노드로 지정
+			last->right = temp;																 
+			last = temp;																			 
+			hdnode[col]->u.next->down = temp;								 
+			hdnode[col]->u.next = temp;												 
 		}
 	}
 	// close last row
-	last->right = hdnode[current_row];											//........		9 : 
+	last->right = hdnode[current_row];											  
 	// close all column lists
 	for (i = 0; i < num_cols; i++)
-		hdnode[i]->u.next->down = hdnode[i];								//........	  10 : 
+		hdnode[i]->u.next->down = hdnode[i];								
 	// link all head nodes together
 	for (i = 0; i < num_heads - 1; i++)												
-		hdnode[i]->u.next = hdnode[i + 1];										//........	  11 : 
-	hdnode[num_heads - 1]->u.next = node;								//........	  12 : 
-	node->right = hdnode[0];															//........	  13 : 
+		hdnode[i]->u.next = hdnode[i + 1];									
+	hdnode[num_heads - 1]->u.next = node;							
+	node->right = hdnode[0];														
 	return node;
 }
 
 void mwrite(matrix_pointer node)
 {
 	int i;
+	if (node == NULL) {
+		printf("empty\n");
+		return;
+	}
 	matrix_pointer temp=new_node(), head = node->right;
 	for (i = 0; i < node->u.entry.row; i++) {
 		for (temp = head->right; temp != head; temp = temp->right)
@@ -123,4 +126,27 @@ void mwrite(matrix_pointer node)
 		head = head->u.next;
 	}
 	printf("\n");
+	return;
+}
+
+void merase(matrix_pointer* node)
+{
+	int i, num_heads;
+	//matrix_pointer node = *nodePointer;
+	matrix_pointer x, y, head = (*node)->right;
+
+	for (i = 0; i < (*node)->u.entry.row; i++) {
+		y = head->right;
+		while (y != head) {
+			x = y; y = y->right; free(x);
+		}
+		x = head; head = head->u.next; free(x);
+	}
+	// free remaining head nodes
+	y = head;
+	while (y != (*node)) {
+		x = y; y = y->u.next; free(x);
+	}
+	free((*node)); (*node )= NULL;
+	return;
 }
